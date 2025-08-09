@@ -33,13 +33,16 @@ def evaluate_coin_with_gpt(client: Optional[OpenAI], coin: Coin, model: str) -> 
         return "AI disabled or missing API key"
 
     prompt = build_prompt(coin)
-    resp = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
-        max_tokens=200,
-        timeout=20,
-    )
-    return resp.choices[0].message.content
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=200,
+            timeout=20,
+        )
+        return resp.choices[0].message.content
+    except Exception as exc:
+        return f"AI evaluation failed for model '{model}': {exc}"
 
 

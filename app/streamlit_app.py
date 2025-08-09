@@ -19,6 +19,19 @@ with st.sidebar:
     base = get_settings()
     enable_ai = st.checkbox("Enable AI", value=base.enable_ai)
     enable_trading = st.checkbox("Enable Trading (danger)", value=base.enable_trading)
+    # Model selection mapping
+    model_options = {
+        "GPT-4o mini (fast/cheap)": "gpt-4o-mini",
+        "GPT-4o": "gpt-4o",
+        "GPT-5 (if available)": "gpt-5",
+    }
+    # Determine default label based on current config
+    default_label = next(
+        (label for label, mid in model_options.items() if mid == base.gpt_model),
+        "GPT-4o mini (fast/cheap)",
+    )
+    selected_label = st.selectbox("OpenAI Model", options=list(model_options.keys()), index=list(model_options.keys()).index(default_label))
+    selected_model = model_options[selected_label]
     contract_min = st.number_input(
         "Min Contract Score", min_value=0, max_value=100, value=base.contract_score_min, step=5
     )
@@ -58,6 +71,7 @@ if run_btn:
             "ENABLE_TRADING": str(enable_trading).lower(),
             "CONTRACT_SCORE_MIN": contract_min,
             "BUY_AMOUNT_SOL": buy_amount,
+            "GPT_MODEL": selected_model,
         }
     )
     coins = asyncio.run(collect_and_evaluate(override))
