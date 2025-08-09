@@ -11,7 +11,7 @@ from gptrader.models import Coin
 from gptrader.orchestrator import collect_and_evaluate
 
 
-st.set_page_config(page_title="GPTrader Dashboard", layout="wide")
+st.set_page_config(page_title="GPTrader Dashboard", layout="wide", initial_sidebar_state="expanded")
 st.title("GPTrader Dashboard")
 
 with st.sidebar:
@@ -30,7 +30,12 @@ with st.sidebar:
         (label for label, mid in model_options.items() if mid == base.gpt_model),
         "GPT-4o mini (fast/cheap)",
     )
-    selected_label = st.selectbox("OpenAI Model", options=list(model_options.keys()), index=list(model_options.keys()).index(default_label))
+    options = list(model_options.keys())
+    try:
+        default_index = options.index(default_label)
+    except ValueError:
+        default_index = 0
+    selected_label = st.selectbox("OpenAI Model", options=options, index=default_index)
     selected_model = model_options[selected_label]
     contract_min = st.number_input(
         "Min Contract Score", min_value=0, max_value=100, value=base.contract_score_min, step=5
