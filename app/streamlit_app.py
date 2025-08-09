@@ -16,6 +16,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from gptrader.config import Settings, get_settings
 from gptrader.models import Coin
 from gptrader.orchestrator import collect_and_evaluate
+from gptrader.wallet.manager import ensure_vault, get_vault_pubkey, get_balance_sol
 
 
 st.set_page_config(page_title="GPTrader Dashboard", layout="wide", initial_sidebar_state="expanded")
@@ -51,6 +52,30 @@ with st.sidebar:
         "Buy Amount (SOL)", min_value=0.0, value=float(base.buy_amount_sol), step=0.5
     )
     run_btn = st.button("Run Scan")
+
+st.subheader("Bot Vault")
+vault = ensure_vault()
+pubkey = vault.pubkey
+st.write("Deposit Address:")
+st.code(pubkey, language="text")
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    if base.solana_rpc_url:
+        refresh = st.button("Refresh Balance")
+        if refresh:
+            with st.spinner("Fetching balance..."):
+                bal = get_balance_sol(base.solana_rpc_url, pubkey)
+                st.session_state["vault_balance_sol"] = bal
+        bal = st.session_state.get("vault_balance_sol")
+        if bal is None:
+            bal = get_balance_sol(base.solana_rpc_url, pubkey)
+            st.session_state["vault_balance_sol"] = bal
+        st.metric(label="Balance (SOL)", value=f"{bal:.6f}")
+    else:
+        st.warning("Set SOLANA_RPC_URL in .env to show balance.")
+with col2:
+    st.info("Send SOL to the deposit address to fund the bot. The private key is stored locally in data/vault.json (mounted in Docker).")
 
 
 def coins_to_df(coins: List[Coin]) -> pd.DataFrame:
