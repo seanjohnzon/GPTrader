@@ -27,6 +27,21 @@ Async Solana token discovery and evaluation bot with optional AI analysis and dr
    python -m gptrader
    ```
 
+### Streamlit Dashboard
+Run locally:
+```bash
+streamlit run app/streamlit_app.py
+```
+The dashboard lets you toggle AI/trading, adjust thresholds, and run a scan.
+
+### Docker
+Build and run with Docker Compose:
+```bash
+docker compose build
+docker compose up
+```
+Open `http://localhost:8501`.
+
 ## Configuration
 Environment variables (via `.env`):
 - `OPENAI_API_KEY`: OpenAI API key (optional; AI disabled if missing)

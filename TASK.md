@@ -10,6 +10,8 @@
 - [x] Create pytest suite with success, edge, failure cases (2025-08-09)
 - [x] Update README with setup and usage (2025-08-09)
 
+- [x] Add Streamlit dashboard and Docker setup (2025-08-09)
+
 ### Discovered During Work
 - Add alternative risk providers (RugCheck/Birdeye) behind a feature flag.
 - Optional FastAPI service wrapper for listing candidates and triggering runs.
