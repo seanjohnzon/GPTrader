@@ -53,29 +53,26 @@ with st.sidebar:
     )
     run_btn = st.button("Run Scan")
 
-st.subheader("Bot Vault")
-vault = ensure_vault()
-pubkey = vault.pubkey
-st.write("Deposit Address:")
-st.code(pubkey, language="text")
+    st.divider()
+    st.header("Wallet")
+    vault = ensure_vault()
+    pubkey = vault.pubkey
+    st.caption("Deposit Address:")
+    st.code(pubkey, language="text")
 
-col1, col2 = st.columns([1, 1])
-with col1:
+    refresh_bal = st.button("Refresh Balance", key="refresh_balance_sidebar")
     if base.solana_rpc_url:
-        refresh = st.button("Refresh Balance")
-        if refresh:
+        if refresh_bal or ("vault_balance_sol" not in st.session_state):
             with st.spinner("Fetching balance..."):
                 bal = get_balance_sol(base.solana_rpc_url, pubkey)
                 st.session_state["vault_balance_sol"] = bal
-        bal = st.session_state.get("vault_balance_sol")
-        if bal is None:
-            bal = get_balance_sol(base.solana_rpc_url, pubkey)
-            st.session_state["vault_balance_sol"] = bal
+        bal = st.session_state.get("vault_balance_sol", 0.0)
         st.metric(label="Balance (SOL)", value=f"{bal:.6f}")
     else:
         st.warning("Set SOLANA_RPC_URL in .env to show balance.")
-with col2:
-    st.info("Send SOL to the deposit address to fund the bot. The private key is stored locally in data/vault.json (mounted in Docker).")
+
+st.subheader("Bot Vault")
+st.info("Send SOL to the deposit address shown in the sidebar. The private key is stored locally in data/vault.json (mounted in Docker).")
 
 
 def coins_to_df(coins: List[Coin]) -> pd.DataFrame:
